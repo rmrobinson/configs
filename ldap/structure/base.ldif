@@ -1,0 +1,86 @@
+# Set up the base OUs
+# - users stores user accounts and profiles
+# - groups stores groups, for ACLs and POSIX and mail
+# - hosts stores any IP reachable host, including desktops, laptops, printers, ...
+# - services stores data which services accessing LDAP will need.
+#  - each service has it's own OU; most are named by program; some are slightly more generic (i.e. DNS)
+#  - ou=accounts holds the principles which will be used by the services.
+#  - Entries in accounts will usually match the name of the OU one level higher
+dn: ou=users,dc=net,dc=faltung,dc=ca
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=net,dc=faltung,dc=ca
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=hosts,dc=net,dc=faltung,dc=ca
+objectClass: organizationalUnit
+ou: hosts
+
+dn: ou=services,dc=net,dc=faltung,dc=ca
+objectClass: organizationalUnit
+ou: services
+
+# We don't create this explicitly, MIT Kerberos KDC will do this for us
+#dn: ou=kdc,ou=services,dc=net,dc=faltung,dc=ca
+#objectClass: organizationalUnit
+#ou: kdc
+
+# The following are proposed services which could be added
+#dn: ou=autofs,ou=services,dc=net,dc=faltung,dc=ca
+#objectClass: organizationalUnit
+#ou: autofs
+#
+#dn: cn=dhcp,ou=services,dc=net,dc=faltung,dc=ca
+#objectClass: top
+#cn: dhcp
+#
+#dn: ou=dns,ou=services,dc=net,dc=faltung,dc=ca
+#objectClass: organizationalUnit
+#ou: dns
+#
+#dn: ou=postfix,ou=services,dc=net,dc=faltung,dc=ca
+#objectClass: organizationalUnit
+#ou: postfix
+#
+#dn: ou=sudoers,ou=services,dc=net,dc=faltung,dc=ca
+#objectClass: organizationalUnit
+#ou: sudoers
+#
+#dn: ou=accounts,ou=services,dc=net,dc=faltung,dc=ca
+#objectClass: organizationalUnit
+#ou: accounts
+
+# Service accounts
+# set userPassword to anything generated via slappasswd -h {SSHA}
+dn: uid=kdc,ou=accounts,ou=services,dc=net,dc=faltung,dc=ca
+objectClass: account
+objectClass: simpleSecurityObject
+uid: kdc
+userPassword: {SSHA}
+description: 'Bind account for KDC servers'
+
+dn: uid=kadmin,ou=accounts,ou=services,dc=net,dc=faltung,dc=ca
+objectClass: account
+objectClass: simpleSecurityObject
+uid: kadmin
+userPassword: {SSHA}
+description: 'Bind account for kadmin servers'
+
+dn: uid=dns,ou=accounts,ou=services,dc=net,dc=faltung,dc=ca
+objectClass: account
+objectClass: simpleSecurityObject
+uid: dns
+userPassword: {SSHA}
+description: 'Bind account for DNS servers'
+
+dn: uid=robertrobinson,ou=users,dc=net,dc=faltung,dc=ca
+objectClass: inetOrgPerson
+uid: robertrobinson
+
+dn: cn=dnsadmin,ou=groups,dc=net,dc=faltung,dc=ca
+objectClass: groupOfMembers
+cn: dnsadmin
+description: 'DNS administrators'
+member: uid=robertrobinson,ou=users,dc=net,dc=faltung,dc=ca
